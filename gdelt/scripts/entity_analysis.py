@@ -13,7 +13,7 @@ spark = glueContext.spark_session
 spark.sparkContext.setLogLevel("ERROR")
 
 OUTPUT_DIR = "/home/glue_user/workspace/data/gdelt/result_markdowns/"
-GRAPH_DIR = "/home/glue_user/workspace/graphs/"
+GRAPH_DIR = "/home/glue_user/workspace/data/gdelt/graphs/"
 print("--- Starting Entity Sentiment Analysis ---")
 
 # 1. LOAD DATA
@@ -64,22 +64,27 @@ with open(OUTPUT_DIR + "entity_sentiment_snippet.md", "w") as f:
 print(f"Saved snippet to {OUTPUT_DIR}entity_sentiment_snippet.md")
 
 # 4. PLOT GRAPH
-plt.figure(figsize=(10, 6))
-
-# Create a grouped bar chart
-# Use color to separate Feb (Orange) vs May (Green)
+fig = plt.figure(figsize=(10, 6), facecolor='white')
 sns.set_style("whitegrid")
 ax = sns.barplot(data=sentiment_df, x='Company', y='avg_tone', hue='label_week', 
-                 palette={'week_feb': 'orange', 'week_may': 'green'})
+                 palette={'week_feb': '#1E3A8A', 'week_may': '#ee1b27'})
+ax.set_facecolor('white')
 
-plt.title("How did Sentiment change for each Tech Giant?", fontsize=14)
-plt.ylabel("Average Net Tone (Higher is Better)", fontsize=12)
-plt.xlabel("")
-plt.axhline(0, color='black', linewidth=0.8)
+plt.title("How did Sentiment change for each Tech Giant?", fontsize=14, color='#1E3A8A', fontweight='bold')
+plt.ylabel("Average Net Tone (Higher is Better)", fontsize=12, color='#1E3A8A')
+plt.xlabel("", color='#1E3A8A')
+ax.tick_params(colors='#1E3A8A')
+plt.axhline(0, color='#1E3A8A', linewidth=0.8)
 
 # Add Legend with better labels
 handles, labels = ax.get_legend_handles_labels()
-ax.legend(handles, ["Feb 2024", "May 2024"], title="Time Period")
+legend = ax.legend(handles, ["Feb 2024", "May 2024"], title="Time Period", facecolor='white', edgecolor='#1E3A8A')
+plt.setp(legend.get_texts(), color='#1E3A8A')
+plt.setp(legend.get_title(), color='#1E3A8A')
+ax.spines['bottom'].set_color('#1E3A8A')
+ax.spines['left'].set_color('#1E3A8A')
+ax.spines['top'].set_visible(False)
+ax.spines['right'].set_visible(False)
 
 # Save
 import os

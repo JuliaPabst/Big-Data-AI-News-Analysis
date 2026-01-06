@@ -136,19 +136,25 @@ print(f"Saved {OUTPUT_DIR}network_report.md")
 print("4. Generating Graphs...")
 
 # --- Graph 1: Top Sources Comparison ---
-fig, axes = plt.subplots(1, 2, figsize=(14, 6))
+fig, axes = plt.subplots(1, 2, figsize=(14, 6), facecolor='white')
 
 def plot_bar(ax, df, title, color):
+    ax.set_facecolor('white')
     if not df.empty:
         df = df.sort_values('article_count', ascending=True) 
         ax.barh(df['source'], df['article_count'], color=color)
-        ax.set_title(title, fontsize=12, fontweight='bold')
-        ax.set_xlabel("Number of Articles")
+        ax.set_title(title, fontsize=12, fontweight='bold', color='#1E3A8A')
+        ax.set_xlabel("Number of Articles", color='#1E3A8A')
+        ax.tick_params(colors='#1E3A8A')
+        ax.spines['bottom'].set_color('#1E3A8A')
+        ax.spines['left'].set_color('#1E3A8A')
+        ax.spines['top'].set_visible(False)
+        ax.spines['right'].set_visible(False)
     else:
-        ax.text(0.5, 0.5, "No Data", ha='center')
+        ax.text(0.5, 0.5, "No Data", ha='center', color='#1E3A8A')
 
-plot_bar(axes[0], src_google, "Who writes about Google?", "orange")
-plot_bar(axes[1], src_openai, "Who writes about OpenAI?", "green")
+plot_bar(axes[0], src_google, "Who writes about Google?", "#003E96")
+plot_bar(axes[1], src_openai, "Who writes about OpenAI?", "#ee1b27")
 
 plt.tight_layout()
 import os
@@ -157,21 +163,27 @@ plt.savefig(GRAPH_DIR + "graph_top_sources.png")
 print("Saved graph_top_sources.png")
 
 # --- Graph 2: Partnerships Comparison ---
-fig, axes = plt.subplots(1, 2, figsize=(14, 6))
+fig, axes = plt.subplots(1, 2, figsize=(14, 6), facecolor='white')
 
 def plot_partners(ax, df, title, color):
+    ax.set_facecolor('white')
     if not df.empty:
         df = df.sort_values('count', ascending=True)
         # Truncate long partner names
         short_names = [n[:15] + ".." if len(n)>15 else n for n in df['partner']]
         ax.barh(short_names, df['count'], color=color)
-        ax.set_title(title, fontsize=12, fontweight='bold')
-        ax.set_xlabel("Co-mentions")
+        ax.set_title(title, fontsize=12, fontweight='bold', color='#1E3A8A')
+        ax.set_xlabel("Co-mentions", color='#1E3A8A')
+        ax.tick_params(colors='#1E3A8A')
+        ax.spines['bottom'].set_color('#1E3A8A')
+        ax.spines['left'].set_color('#1E3A8A')
+        ax.spines['top'].set_visible(False)
+        ax.spines['right'].set_visible(False)
     else:
-        ax.text(0.5, 0.5, "No Data", ha='center')
+        ax.text(0.5, 0.5, "No Data", ha='center', color='#1E3A8A')
 
-plot_partners(axes[0], part_google, "Google's Orbit", "orange")
-plot_partners(axes[1], part_openai, "OpenAI's Orbit", "green")
+plot_partners(axes[0], part_google, "Google's Orbit", "#003E96")
+plot_partners(axes[1], part_openai, "OpenAI's Orbit", "#ee1b27")
 
 plt.tight_layout()
 plt.savefig(GRAPH_DIR + "graph_partnerships.png")

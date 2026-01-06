@@ -159,23 +159,32 @@ plot_coeffs = [x * -1 for x in raw_coeffs]
 plot_labels = [feature_map.get(col, col) for col in feature_cols]
 
 # 3. Graph 1: Feature Importance
-plt.figure(figsize=(11, 6))
+plt.figure(figsize=(11, 6), facecolor='white')
+ax = plt.gca()
+ax.set_facecolor('white')
 
-# Color logic: Green for May (Right), Orange for Feb (Left)
-colors = ['green' if x > 0 else 'orange' for x in plot_coeffs]
+# Color logic: Red for May (Right), Light blue for Feb (Left)
+colors = ['#ee1b27' if x > 0 else '#003E96' for x in plot_coeffs]
 
 bars = plt.barh(plot_labels, plot_coeffs, color=colors)
-plt.title(f"What distinguishes the two periods? (Model Impact)", fontsize=14)
+plt.title(f"What distinguishes the two periods? (Model Impact)", fontsize=14, color='#1E3A8A', fontweight='bold')
 
 # Custom X-Axis Labels
-plt.xlabel("Impact Strength", fontsize=12)
-plt.axvline(0, color='black', linewidth=0.8)
+plt.xlabel("Impact Strength", fontsize=12, color='#1E3A8A')
+plt.axvline(0, color='#1E3A8A', linewidth=0.8)
 
 # Add "Linked to..." text on the plot sides
 plt.text(min(plot_coeffs)/2, len(plot_labels)-0.5, "Linked to FEB\n(Google Era)", 
-         ha='center', color='orange', fontweight='bold')
+         ha='center', color='#003E96', fontweight='bold', fontsize=11)
 plt.text(max(plot_coeffs)/2, len(plot_labels)-0.5, "Linked to MAY\n(OpenAI Era)", 
-         ha='center', color='green', fontweight='bold')
+         ha='center', color='#ee1b27', fontweight='bold', fontsize=11)
+
+# Style axes
+ax.tick_params(colors='#1E3A8A', labelsize=10)
+ax.spines['bottom'].set_color('#1E3A8A')
+ax.spines['left'].set_color('#1E3A8A')
+ax.spines['top'].set_visible(False)
+ax.spines['right'].set_visible(False)
 
 plt.grid(axis='x', linestyle='--', alpha=0.5)
 plt.tight_layout()
@@ -196,10 +205,16 @@ pdf_stats = pdf_stats.rename(columns={
 })
 
 # Plot
-ax = pdf_stats[['Google', 'OpenAI', 'Anthropic']].plot(kind='bar', figsize=(10, 6), color=['orange', 'green', 'purple'])
-plt.title("Tech Giant Share of Voice", fontsize=14)
-plt.ylabel("Percentage of Articles", fontsize=12)
-plt.xticks(rotation=0)
+fig = plt.figure(figsize=(10, 6), facecolor='white')
+ax = fig.add_subplot(111)
+ax.set_facecolor('white')
+
+pdf_stats[['Google', 'OpenAI', 'Anthropic']].plot(kind='bar', ax=ax, color=['#003E96', '#ee1b27', '#1E3A8A'])
+plt.title("Tech Giant Share of Voice", fontsize=14, color='#1E3A8A', fontweight='bold')
+plt.ylabel("Percentage of Articles", fontsize=12, color='#1E3A8A')
+plt.xlabel("", fontsize=12, color='#1E3A8A')
+plt.xticks(rotation=0, color='#1E3A8A')
+plt.yticks(color='#1E3A8A')
 plt.ylim(0, 100) # Fix y-axis to 0-100%
 
 # Add value labels on top of bars
@@ -207,10 +222,156 @@ for p in ax.patches:
     if p.get_height() > 0:  # Only show labels for non-zero values
         ax.annotate(f'{p.get_height():.1f}%', 
                     (p.get_x() + p.get_width() / 2., p.get_height()), 
-                    ha='center', va='bottom', fontsize=9, fontweight='bold')
+                    ha='center', va='bottom', fontsize=9, fontweight='bold', color='#1E3A8A')
+
+# Style axes
+ax.spines['bottom'].set_color('#1E3A8A')
+ax.spines['left'].set_color('#1E3A8A')
+ax.spines['top'].set_visible(False)
+ax.spines['right'].set_visible(False)
+ax.legend(facecolor='white', edgecolor='#1E3A8A', labelcolor='#1E3A8A')
 
 plt.tight_layout()
 plt.savefig(GRAPH_DIR + "graph_share_of_voice.png")
 print("Saved graph_share_of_voice.png")
+
+# --- 5. SOURCE SENTIMENT ANALYSIS ---
+print("Analyzing sentiment by news source...")
+
+# Most positive and negative sources for Google (minimum 3 articles)
+google_sources = spark.sql("""
+    SELECT 
+        domain as source,
+        count(*) as article_count,
+        round(avg(v2tone_1), 2) as avg_sentiment
+    FROM gdelt
+    WHERE k_google = 1 AND domain IS NOT NULL
+    GROUP BY domain
+    HAVING count(*) >= 3
+    ORDER BY avg_sentiment DESC
+""").toPandas()
+
+# Most positive and negative sources for OpenAI (minimum 3 articles)
+openai_sources = spark.sql("""
+    SELECT 
+        domain as source,
+        count(*) as article_count,
+        round(avg(v2tone_1), 2) as avg_sentiment
+    FROM gdelt
+    WHERE k_openai = 1 AND domain IS NOT NULL
+    GROUP BY domain
+    HAVING count(*) >= 3
+    ORDER BY avg_sentiment DESC
+""").toPandas()
+
+# Get top 5 most positive and negative for each
+google_positive = google_sources.head(5)
+google_negative = google_sources.tail(5).iloc[::-1]  # Reverse to show most negative first
+openai_positive = openai_sources.head(5)
+openai_negative = openai_sources.tail(5).iloc[::-1]
+
+# Graph: Side-by-side comparison
+fig, axes = plt.subplots(2, 2, figsize=(14, 10), facecolor='white')
+
+# Google Positive
+if not google_positive.empty:
+    axes[0, 0].set_facecolor('white')
+    axes[0, 0].barh(google_positive['source'], google_positive['avg_sentiment'], color='#003E96')
+    axes[0, 0].set_title("Google: Most Positive Sources", fontsize=12, fontweight='bold', color='#1E3A8A')
+    axes[0, 0].set_xlabel("Avg Sentiment Score", color='#1E3A8A')
+    axes[0, 0].tick_params(colors='#1E3A8A', labelsize=9)
+    axes[0, 0].spines['bottom'].set_color('#1E3A8A')
+    axes[0, 0].spines['left'].set_color('#1E3A8A')
+    axes[0, 0].spines['top'].set_visible(False)
+    axes[0, 0].spines['right'].set_visible(False)
+    axes[0, 0].invert_yaxis()
+
+# Google Negative
+if not google_negative.empty:
+    axes[1, 0].set_facecolor('white')
+    axes[1, 0].barh(google_negative['source'], google_negative['avg_sentiment'], color='#ee1b27')
+    axes[1, 0].set_title("Google: Most Critical Sources", fontsize=12, fontweight='bold', color='#1E3A8A')
+    axes[1, 0].set_xlabel("Avg Sentiment Score", color='#1E3A8A')
+    axes[1, 0].tick_params(colors='#1E3A8A', labelsize=9)
+    axes[1, 0].spines['bottom'].set_color('#1E3A8A')
+    axes[1, 0].spines['left'].set_color('#1E3A8A')
+    axes[1, 0].spines['top'].set_visible(False)
+    axes[1, 0].spines['right'].set_visible(False)
+    axes[1, 0].invert_yaxis()
+
+# OpenAI Positive
+if not openai_positive.empty:
+    axes[0, 1].set_facecolor('white')
+    axes[0, 1].barh(openai_positive['source'], openai_positive['avg_sentiment'], color='#003E96')
+    axes[0, 1].set_title("OpenAI: Most Positive Sources", fontsize=12, fontweight='bold', color='#1E3A8A')
+    axes[0, 1].set_xlabel("Avg Sentiment Score", color='#1E3A8A')
+    axes[0, 1].tick_params(colors='#1E3A8A', labelsize=9)
+    axes[0, 1].spines['bottom'].set_color('#1E3A8A')
+    axes[0, 1].spines['left'].set_color('#1E3A8A')
+    axes[0, 1].spines['top'].set_visible(False)
+    axes[0, 1].spines['right'].set_visible(False)
+    axes[0, 1].invert_yaxis()
+
+# OpenAI Negative
+if not openai_negative.empty:
+    axes[1, 1].set_facecolor('white')
+    axes[1, 1].barh(openai_negative['source'], openai_negative['avg_sentiment'], color='#ee1b27')
+    axes[1, 1].set_title("OpenAI: Most Critical Sources", fontsize=12, fontweight='bold', color='#1E3A8A')
+    axes[1, 1].set_xlabel("Avg Sentiment Score", color='#1E3A8A')
+    axes[1, 1].tick_params(colors='#1E3A8A', labelsize=9)
+    axes[1, 1].spines['bottom'].set_color('#1E3A8A')
+    axes[1, 1].spines['left'].set_color('#1E3A8A')
+    axes[1, 1].spines['top'].set_visible(False)
+    axes[1, 1].spines['right'].set_visible(False)
+    axes[1, 1].invert_yaxis()
+
+plt.tight_layout()
+plt.savefig(GRAPH_DIR + "graph_source_sentiment.png")
+print("Saved graph_source_sentiment.png")
+
+# Add to markdown report
+sentiment_report = f"""
+## 4. SOURCE SENTIMENT ANALYSIS
+
+### Google Coverage
+
+**Most Positive Sources:**
+| Rank | Source | Articles | Avg Sentiment |
+| :--- | :--- | :--- | :--- |
+"""
+for i, row in google_positive.iterrows():
+    sentiment_report += f"| {i+1} | {row['source']} | {row['article_count']} | **+{row['avg_sentiment']}** |\n"
+
+sentiment_report += """
+**Most Critical Sources:**
+| Rank | Source | Articles | Avg Sentiment |
+| :--- | :--- | :--- | :--- |
+"""
+for i, row in google_negative.iterrows():
+    sentiment_report += f"| {i+1} | {row['source']} | {row['article_count']} | **{row['avg_sentiment']}** |\n"
+
+sentiment_report += """
+### OpenAI Coverage
+
+**Most Positive Sources:**
+| Rank | Source | Articles | Avg Sentiment |
+| :--- | :--- | :--- | :--- |
+"""
+for i, row in openai_positive.iterrows():
+    sentiment_report += f"| {i+1} | {row['source']} | {row['article_count']} | **+{row['avg_sentiment']}** |\n"
+
+sentiment_report += """
+**Most Critical Sources:**
+| Rank | Source | Articles | Avg Sentiment |
+| :--- | :--- | :--- | :--- |
+"""
+for i, row in openai_negative.iterrows():
+    sentiment_report += f"| {i+1} | {row['source']} | {row['article_count']} | **{row['avg_sentiment']}** |\n"
+
+# Append to existing report
+with open(OUTPUT_DIR + "summary_report.md", "a") as f:
+    f.write(sentiment_report)
+
+print("Updated summary_report.md with source sentiment analysis")
 
 print("--- Job Complete ---")

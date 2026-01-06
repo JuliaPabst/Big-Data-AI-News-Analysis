@@ -43,3 +43,45 @@ The following features were the strongest predictors for the time period:
 **February 2024** was defined by "Google Gemini" coverage. The correlation with higher negative scores and self-referencing language suggests this period contained significant critical analysis, op-eds, and controversy regarding Google's AI launches.
 
 **May 2024** was defined by "OpenAI GPT-4o" and "Anthropic" coverage. The shift to positive tone and objective language indicates a reception focused more on product capabilities, launch announcements, and factual reporting rather than controversy.
+
+## 4. SOURCE SENTIMENT ANALYSIS
+
+### Google Coverage
+
+**Most Positive Sources:**
+| Rank | Source | Articles | Avg Sentiment |
+| :--- | :--- | :--- | :--- |
+| 1 | geeky-gadgets.com | 14 | **+6.71** |
+| 2 | pc-tablet.co.in | 16 | **+5.76** |
+| 3 | yourstory.com | 5 | **+5.31** |
+| 4 | fonearena.com | 4 | **+4.81** |
+| 5 | thenorthlines.com | 3 | **+4.76** |
+
+**Most Critical Sources:**
+| Rank | Source | Articles | Avg Sentiment |
+| :--- | :--- | :--- | :--- |
+| 148 | breitbart.com | 5 | **-2.3** |
+| 147 | gizmodo.com | 8 | **-2.06** |
+| 146 | bnnbloomberg.ca | 4 | **-0.69** |
+| 145 | droid-life.com | 3 | **-0.34** |
+| 144 | cnn.com | 11 | **-0.24** |
+
+### OpenAI Coverage
+
+**Most Positive Sources:**
+| Rank | Source | Articles | Avg Sentiment |
+| :--- | :--- | :--- | :--- |
+| 1 | geeky-gadgets.com | 16 | **+6.24** |
+| 2 | thenorthlines.com | 4 | **+5.88** |
+| 3 | pc-tablet.co.in | 13 | **+4.13** |
+| 4 | gizbot.com | 4 | **+4.05** |
+| 5 | newsx.com | 3 | **+4.04** |
+
+**Most Critical Sources:**
+| Rank | Source | Articles | Avg Sentiment |
+| :--- | :--- | :--- | :--- |
+| 247 | outlookindia.com | 3 | **-2.55** |
+| 246 | breitbart.com | 6 | **-2.03** |
+| 245 | theregister.com | 6 | **-1.69** |
+| 244 | sakshipost.com | 3 | **-1.63** |
+| 243 | jobsnhire.com | 3 | **-1.42** |

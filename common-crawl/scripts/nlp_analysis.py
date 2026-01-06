@@ -12,9 +12,9 @@ from pyspark.ml.feature import Tokenizer, StopWordsRemover, CountVectorizer, IDF
 
 # --- CONFIGURATION ---
 INPUT_PATH = "file:///home/glue_user/workspace/data/common-crawl/data"
-OUTPUT_DIR = "/home/glue_user/workspace/data"
+OUTPUT_DIR = "/home/glue_user/workspace/data/common-crawl/results"
 OUTPUT_CSV = f"{OUTPUT_DIR}/nlp_final_results.csv"
-OUTPUT_MD = f"{OUTPUT_DIR}/executive_analysis_report.md"
+OUTPUT_MD = f"{OUTPUT_DIR}/analysis_report.md"
 
 # Images
 IMG_BIGRAMS = f"{OUTPUT_DIR}/narrative_comparison.png"
@@ -27,7 +27,7 @@ glueContext = GlueContext(sc)
 spark = glueContext.spark_session
 spark.sparkContext.setLogLevel("ERROR")
 
-print("--- Starting Executive NLP Analysis ---")
+print("--- Starting NLP Analysis ---")
 
 # 1. LOAD DATA
 try:
@@ -178,18 +178,32 @@ for idx, row in pdf.iterrows():
 feb_counts = pd.Series(feb_phrases).value_counts().head(8)
 may_counts = pd.Series(may_phrases).value_counts().head(8)
 
-plt.figure(figsize=(12, 6))
+fig = plt.figure(figsize=(12, 6), facecolor='white')
 plt.subplot(1, 2, 1)
+ax1 = plt.gca()
+ax1.set_facecolor('white')
 if not feb_counts.empty:
-    feb_counts.sort_values().plot(kind='barh', color='#4285F4') # Google Blue
-    plt.title("Feb (Gemini Era)")
-    plt.xlabel("Frequency")
+    feb_counts.sort_values().plot(kind='barh', color='#003E96', ax=ax1)
+    plt.title("Feb (Gemini Era)", color='#1E3A8A', fontweight='bold')
+    plt.xlabel("Frequency", color='#1E3A8A')
+    ax1.tick_params(colors='#1E3A8A')
+    ax1.spines['bottom'].set_color('#1E3A8A')
+    ax1.spines['left'].set_color('#1E3A8A')
+    ax1.spines['top'].set_visible(False)
+    ax1.spines['right'].set_visible(False)
 
 plt.subplot(1, 2, 2)
+ax2 = plt.gca()
+ax2.set_facecolor('white')
 if not may_counts.empty:
-    may_counts.sort_values().plot(kind='barh', color='#10A37F') # OpenAI Green
-    plt.title("May (AI Wars)")
-    plt.xlabel("Frequency")
+    may_counts.sort_values().plot(kind='barh', color='#ee1b27', ax=ax2)
+    plt.title("May (AI Wars)", color='#1E3A8A', fontweight='bold')
+    plt.xlabel("Frequency", color='#1E3A8A')
+    ax2.tick_params(colors='#1E3A8A')
+    ax2.spines['bottom'].set_color('#1E3A8A')
+    ax2.spines['left'].set_color('#1E3A8A')
+    ax2.spines['top'].set_visible(False)
+    ax2.spines['right'].set_visible(False)
 plt.tight_layout()
 plt.savefig(IMG_BIGRAMS)
 
@@ -205,12 +219,20 @@ if not mod_df.empty:
     # Normalize percentages to show the *shift* in focus
     grouped_pct = grouped.div(grouped.sum(axis=1), axis=0) * 100
     
-    plt.figure(figsize=(8, 6))
-    grouped_pct.plot(kind='bar', stacked=True, color=['#FF6D01', '#9C27B0', '#607D8B']) # Video=Orange, Audio=Purple, Text=Grey
-    plt.title("The Modality Shift: From Text (Feb) to Video/Voice (May)")
-    plt.ylabel("Share of Terminology (%)")
-    plt.xticks(rotation=0)
-    plt.legend(["Video (Veo/Sora)", "Audio (Voice/Sky)", "Text (Code/Token)"])
+    fig = plt.figure(figsize=(8, 6), facecolor='white')
+    ax = plt.gca()
+    ax.set_facecolor('white')
+    grouped_pct.plot(kind='bar', stacked=True, color=['#ee1b27', '#003E96', '#1E3A8A'], ax=ax)
+    plt.title("The Modality Shift: From Text (Feb) to Video/Voice (May)", color='#1E3A8A', fontweight='bold')
+    plt.ylabel("Share of Terminology (%)", color='#1E3A8A')
+    plt.xlabel("", color='#1E3A8A')
+    plt.xticks(rotation=0, color='#1E3A8A')
+    plt.yticks(color='#1E3A8A')
+    ax.spines['bottom'].set_color('#1E3A8A')
+    ax.spines['left'].set_color('#1E3A8A')
+    ax.spines['top'].set_visible(False)
+    ax.spines['right'].set_visible(False)
+    plt.legend(["Video (Veo/Sora)", "Audio (Voice/Sky)", "Text (Code/Token)"], facecolor='white', edgecolor='#1E3A8A', labelcolor='#1E3A8A')
     plt.tight_layout()
     plt.savefig(IMG_MODALITY)
 

@@ -140,23 +140,29 @@ print(f"Saved {OUTPUT_DIR}theme_report.md")
 print("4. Generating Graphs...")
 
 # --- Graph 1: Dominant Themes (Subplots) ---
-fig, axes = plt.subplots(1, 3, figsize=(15, 6), sharey=False)
-fig.suptitle('Dominant Themes by Company', fontsize=16)
+fig, axes = plt.subplots(1, 3, figsize=(15, 6), sharey=False, facecolor='white')
+fig.suptitle('Dominant Themes by Company', fontsize=16, color='#1E3A8A', fontweight='bold')
 
 # Helper to plot on axes
 def plot_company_themes(ax, df_data, title, color):
+    ax.set_facecolor('white')
     if not df_data.empty:
         # Sort for chart
         df_sorted = df_data.sort_values('count', ascending=True)
         ax.barh(df_sorted['theme_short'], df_sorted['count'], color=color)
-        ax.set_title(title, fontsize=12, fontweight='bold')
-        ax.set_xlabel("Articles")
+        ax.set_title(title, fontsize=12, fontweight='bold', color='#1E3A8A')
+        ax.set_xlabel("Articles", color='#1E3A8A')
+        ax.tick_params(colors='#1E3A8A')
+        ax.spines['bottom'].set_color('#1E3A8A')
+        ax.spines['left'].set_color('#1E3A8A')
+        ax.spines['top'].set_visible(False)
+        ax.spines['right'].set_visible(False)
     else:
-        ax.text(0.5, 0.5, "No Data", ha='center')
+        ax.text(0.5, 0.5, "No Data", ha='center', color='#1E3A8A')
 
-plot_company_themes(axes[0], df_google, "Google", "orange")
-plot_company_themes(axes[1], df_openai, "OpenAI", "green")
-plot_company_themes(axes[2], df_anthropic, "Anthropic", "purple")
+plot_company_themes(axes[0], df_google, "Google", "#003E96")
+plot_company_themes(axes[1], df_openai, "OpenAI", "#ee1b27")
+plot_company_themes(axes[2], df_anthropic, "Anthropic", "#1E3A8A")
 
 plt.tight_layout()
 plt.subplots_adjust(top=0.85)
@@ -166,24 +172,31 @@ plt.savefig(GRAPH_DIR + "graph_dominant_themes.png")
 print("Saved graph_dominant_themes.png")
 
 # --- Graph 2: ML Shift (Butterfly Chart) ---
-plt.figure(figsize=(10, 8))
+fig = plt.figure(figsize=(10, 8), facecolor='white')
+ax = plt.gca()
+ax.set_facecolor('white')
 
 # Combine top Feb and top May
 ml_plot_df = pd.concat([top_feb, top_may])
-ml_plot_df['Color'] = ['orange' if x > 0 else 'green' for x in ml_plot_df['Score']]
+ml_plot_df['Color'] = ['#003E96' if x > 0 else '#ee1b27' for x in ml_plot_df['Score']]
 ml_plot_df = ml_plot_df.sort_values('Score')
 
 plt.barh(ml_plot_df['Theme'], ml_plot_df['Score'], color=ml_plot_df['Color'])
-plt.title("Thematic Shift: Feb vs May", fontsize=14)
-plt.xlabel("Model Coefficient (Left=May, Right=Feb)")
-plt.axvline(0, color='black', linewidth=0.8)
+plt.title("Thematic Shift: Feb vs May", fontsize=14, color='#1E3A8A', fontweight='bold')
+plt.xlabel("Model Coefficient (Left=May, Right=Feb)", color='#1E3A8A')
+ax.tick_params(colors='#1E3A8A')
+plt.axvline(0, color='#1E3A8A', linewidth=0.8)
+ax.spines['bottom'].set_color('#1E3A8A')
+ax.spines['left'].set_color('#1E3A8A')
+ax.spines['top'].set_visible(False)
+ax.spines['right'].set_visible(False)
 
 # Add Labels
 if not ml_plot_df.empty:
     min_score = ml_plot_df['Score'].min()
     max_score = ml_plot_df['Score'].max()
-    plt.text(min_score/2, len(ml_plot_df)-0.5, "MAY Themes", color='green', fontweight='bold', ha='center')
-    plt.text(max_score/2, 0, "FEB Themes", color='orange', fontweight='bold', ha='center')
+    plt.text(min_score/2, len(ml_plot_df)-0.5, "MAY Themes", color='#ee1b27', fontweight='bold', ha='center')
+    plt.text(max_score/2, 0, "FEB Themes", color='#003E96', fontweight='bold', ha='center')
 
 plt.tight_layout()
 plt.savefig(GRAPH_DIR + "graph_theme_ml_shift.png")

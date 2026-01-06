@@ -38,6 +38,8 @@ The following features were the strongest predictors for the time period:
 
 ## 4. INTERPRETATION
 
+**A widening gap in Tech Giants**: OpenAI dominated both periods, but Google was significantly more prominent in Feb (55%) than in May (47%), making it a strong signal for the earlier period.
+
 **February 2024** was defined by "Google Gemini" coverage. The correlation with higher negative scores and self-referencing language suggests this period contained significant critical analysis, op-eds, and controversy regarding Google's AI launches.
 
 **May 2024** was defined by "OpenAI GPT-4o" and "Anthropic" coverage. The shift to positive tone and objective language indicates a reception focused more on product capabilities, launch announcements, and factual reporting rather than controversy.

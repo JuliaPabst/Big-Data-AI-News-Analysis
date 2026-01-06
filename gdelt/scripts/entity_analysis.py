@@ -12,12 +12,12 @@ glueContext = GlueContext(sc)
 spark = glueContext.spark_session
 spark.sparkContext.setLogLevel("ERROR")
 
-OUTPUT_DIR = "/home/glue_user/workspace/result_markdowns/"
+OUTPUT_DIR = "/home/glue_user/workspace/data/gdelt/result_markdowns/"
 GRAPH_DIR = "/home/glue_user/workspace/graphs/"
 print("--- Starting Entity Sentiment Analysis ---")
 
 # 1. LOAD DATA
-df = spark.read.parquet("file:///home/glue_user/workspace/data/gdelt_ml_features.parquet")
+df = spark.read.parquet("file:///home/glue_user/workspace/data/gdelt/data/gdelt_ml_features.parquet")
 df.createOrReplaceTempView("gdelt")
 
 # 2. RUN "STACKED" QUERY

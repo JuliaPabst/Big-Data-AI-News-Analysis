@@ -15,9 +15,9 @@ spark = glueContext.spark_session
 spark.sparkContext.setLogLevel("ERROR")
 
 # The folder inside Docker where files are read/written
-DATA_DIR = "file:///home/glue_user/workspace/data/"
-OUTPUT_DIR = "/home/glue_user/workspace/result_markdowns/"
-GRAPH_DIR = "/home/glue_user/workspace/graphs/"
+DATA_DIR = "file:///home/glue_user/workspace/data/gdelt/data/"
+OUTPUT_DIR = "/home/glue_user/workspace/data/gdelt/result_markdowns/"
+GRAPH_DIR = "/home/glue_user/workspace/data/gdelt/graphs/"
 
 print("--- Starting GDELT Analysis Job ---")
 
@@ -35,7 +35,8 @@ stats_df = spark.sql("""
         round(avg(v2tone_1), 2) as avg_tone,
         round(avg(v2tone_3), 2) as avg_neg,
         round(avg(k_google)*100, 1) as pct_google,
-        round(avg(k_openai)*100, 1) as pct_openai
+        round(avg(k_openai)*100, 1) as pct_openai,
+        round(avg(k_anthropic)*100, 1) as pct_anthropic
     FROM gdelt 
     GROUP BY label_week
     ORDER BY label_week
@@ -190,11 +191,12 @@ pdf_stats = pdf_stats.set_index('label_week')
 # Rename columns for the legend
 pdf_stats = pdf_stats.rename(columns={
     'pct_google': 'Google', 
-    'pct_openai': 'OpenAI'
+    'pct_openai': 'OpenAI',
+    'pct_anthropic': 'Anthropic'
 })
 
 # Plot
-ax = pdf_stats[['Google', 'OpenAI']].plot(kind='bar', figsize=(8, 6), color=['orange', 'green'])
+ax = pdf_stats[['Google', 'OpenAI', 'Anthropic']].plot(kind='bar', figsize=(10, 6), color=['orange', 'green', 'purple'])
 plt.title("Tech Giant Share of Voice", fontsize=14)
 plt.ylabel("Percentage of Articles", fontsize=12)
 plt.xticks(rotation=0)
@@ -202,9 +204,10 @@ plt.ylim(0, 100) # Fix y-axis to 0-100%
 
 # Add value labels on top of bars
 for p in ax.patches:
-    ax.annotate(f'{p.get_height():.1f}%', 
-                (p.get_x() + p.get_width() / 2., p.get_height()), 
-                ha='center', va='bottom', fontsize=10, fontweight='bold')
+    if p.get_height() > 0:  # Only show labels for non-zero values
+        ax.annotate(f'{p.get_height():.1f}%', 
+                    (p.get_x() + p.get_width() / 2., p.get_height()), 
+                    ha='center', va='bottom', fontsize=9, fontweight='bold')
 
 plt.tight_layout()
 plt.savefig(GRAPH_DIR + "graph_share_of_voice.png")

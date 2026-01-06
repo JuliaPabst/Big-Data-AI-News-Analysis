@@ -15,9 +15,9 @@ glueContext = GlueContext(sc)
 spark = glueContext.spark_session
 spark.sparkContext.setLogLevel("ERROR")
 
-DATA_DIR = "file:///home/glue_user/workspace/data/"
-OUTPUT_DIR = "/home/glue_user/workspace/result_markdowns/"
-GRAPH_DIR = "/home/glue_user/workspace/graphs/"
+DATA_DIR = "file:///home/glue_user/workspace/data/gdelt/data/"
+OUTPUT_DIR = "/home/glue_user/workspace/data/gdelt/result_markdowns/"
+GRAPH_DIR = "/home/glue_user/workspace/data/gdelt/graphs/"
 
 print("--- Starting Source & Network Analysis ---")
 

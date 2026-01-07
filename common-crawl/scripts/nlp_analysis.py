@@ -222,7 +222,7 @@ if not mod_df.empty:
     fig = plt.figure(figsize=(8, 6), facecolor='white')
     ax = plt.gca()
     ax.set_facecolor('white')
-    grouped_pct.plot(kind='bar', stacked=True, color=['#ee1b27', '#003E96', '#1E3A8A'], ax=ax)
+    grouped_pct.plot(kind='bar', stacked=True, color=['#ee1b27', '#5FA8D3', '#1E3A8A'], ax=ax)
     plt.title("The Modality Shift: From Text (Feb) to Video/Voice (May)", color='#1E3A8A', fontweight='bold')
     plt.ylabel("Share of Terminology (%)", color='#1E3A8A')
     plt.xlabel("", color='#1E3A8A')

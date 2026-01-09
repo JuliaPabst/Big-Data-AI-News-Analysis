@@ -1,0 +1,34 @@
+QA SUMMARY: Mapping AI Project (GDELT Export)
+
+Rows (core): 3415
+Rows (ml):   3415
+Unique URLs (core): 3415
+Date range: 2024-02-12 00:30:00  ->  2024-05-20 23:45:00
+
+Label counts (label_week):
+  - week_may: 2413
+  - week_feb: 1002
+
+Top 10 domains:
+  - yahoo.com: 104
+  - indiatimes.com: 65
+  - theverge.com: 50
+  - businessinsider.com: 46
+  - tomsguide.com: 40
+  - techcrunch.com: 37
+  - marketscreener.com: 32
+  - menafn.com: 31
+  - businesstoday.in: 29
+  - thehindu.com: 29
+
+Missing orgs_arr (empty/null): 18.65%
+Missing themes_arr (empty/null): 13.44%
+
+Missing rate per v2tone column:
+  - v2tone_1: 0.00%
+  - v2tone_2: 0.00%
+  - v2tone_3: 0.00%
+  - v2tone_4: 0.00%
+  - v2tone_5: 0.00%
+  - v2tone_6: 0.00%
+  - v2tone_7: 0.00%

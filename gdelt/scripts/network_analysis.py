@@ -28,9 +28,8 @@ except:
     print("Fixed file not found, trying original...")
     df = spark.read.parquet(DATA_DIR + "gdelt_core.parquet")
 
-# ==========================================
+
 # PART A: WHO IS WRITING? (Source Analysis)
-# ==========================================
 print("1. Analyzing Top News Sources...")
 
 def get_top_sources(company_col, company_name, limit=10):
@@ -50,9 +49,8 @@ def get_top_sources(company_col, company_name, limit=10):
 src_google = get_top_sources("k_google", "Google", 10)
 src_openai = get_top_sources("k_openai", "OpenAI", 10)
 
-# ==========================================
+
 # PART B: WHO ARE THE ALLIES? (Network Analysis)
-# ==========================================
 print("2. Analyzing Co-occurring Organizations...")
 
 def get_top_partners(company_col, company_name, exclude_list, limit=10):
@@ -78,9 +76,7 @@ ignore_openai = ignore_common + ['openai', 'chatgpt', 'open ai']
 part_google = get_top_partners("k_google", "Google", ignore_google, 10)
 part_openai = get_top_partners("k_openai", "OpenAI", ignore_openai, 10)
 
-# ==========================================
 # PART C: GENERATE MARKDOWN REPORT
-# ==========================================
 print("3. Generating network_report.md...")
 
 md_content = f"""# GDELT NETWORK ANALYSIS
@@ -130,9 +126,7 @@ with open(OUTPUT_DIR + "network_report.md", "w") as f:
     f.write(md_content)
 print(f"Saved {OUTPUT_DIR}network_report.md")
 
-# ==========================================
 # PART D: GENERATE GRAPHS
-# ==========================================
 print("4. Generating Graphs...")
 
 # --- Graph 1: Top Sources Comparison ---

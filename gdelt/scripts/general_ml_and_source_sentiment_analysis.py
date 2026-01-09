@@ -8,7 +8,7 @@ from pyspark.ml.classification import LogisticRegression
 from pyspark.ml.evaluation import BinaryClassificationEvaluator
 from pyspark.sql.functions import avg, col, when, round
 
-# --- 1. SETUP & CONFIGURATION ---
+# 1. SETUP & CONFIGURATION 
 sc = SparkContext()
 glueContext = GlueContext(sc)
 spark = glueContext.spark_session
@@ -21,12 +21,12 @@ GRAPH_DIR = "/home/glue_user/workspace/data/gdelt/graphs/"
 
 print("--- Starting GDELT Analysis Job ---")
 
-# --- 2. LOAD DATA ---
+# 2. LOAD DATA 
 df = spark.read.parquet(DATA_DIR + "gdelt_ml_features.parquet")
 df.createOrReplaceTempView("gdelt")
 print(f"Loaded {df.count()} rows.")
 
-# --- 3. CALCULATE STATISTICS (For the Evidence Table) ---
+# 3. CALCULATE STATISTICS (For the Evidence Table) 
 print("Calculating detailed statistics...")
 stats_df = spark.sql("""
     SELECT 
@@ -46,7 +46,7 @@ stats_df = spark.sql("""
 feb_stats = stats_df[0] 
 may_stats = stats_df[1]
 
-# --- 4. TRAIN MACHINE LEARNING MODEL ---
+# 4. TRAIN MACHINE LEARNING MODEL
 print("Training Logistic Regression Model...")
 # Convert labels to numbers (week_feb=0, week_may=1)
 label_indexer = StringIndexer(inputCol="label_week", outputCol="label")
@@ -68,7 +68,7 @@ predictions = model.transform(final_data)
 evaluator = BinaryClassificationEvaluator(labelCol="label")
 auc = evaluator.evaluate(predictions)
 
-# --- 5. GENERATE MARKDOWN REPORT (.md) ---
+# 5. GENERATE MARKDOWN REPORT (.md)
 print("Generating summary_report.md...")
 
 # Build the report string using the computed stats and model results
@@ -83,9 +83,9 @@ report_content = f"""# GDELT AI PROJECT: ANALYTICAL SUMMARY
 Our machine learning model (Logistic Regression) achieved an **AUC of {auc:.2f}**, indicating a strong ability to distinguish between the two time periods based on article content.
 
 The analysis reveals a distinct **"Editorial Shift"** characterized by:
-1. A change in **dominant Tech Giants** (Google in Feb $\\rightarrow$ OpenAI in May).
-2. A shift in **Sentiment** (Critical/Negative in Feb $\\rightarrow$ Optimistic in May).
-3. A shift in **Style** (Opinionated in Feb $\\rightarrow$ Objective in May).
+1. A change in **dominant Tech Giants** (more Google in Feb than in May).
+2. A shift in **Sentiment** (Critical/Negative in Feb and Optimistic in May).
+3. A shift in **Style** (Opinionated in Feb and Objective in May).
 
 ## 2. DETAILED STATISTICS (The Evidence)
 
@@ -120,7 +120,7 @@ for i, col_name in enumerate(feature_cols):
 report_content += """
 ## 4. INTERPRETATION
 
-**A widening gap in Tech Giants**: OpenAI dominated both periods, but Google was significantly more prominent in Feb (55%) than in May (47%), making it a strong signal for the earlier period.
+**A widening gap in Tech Giants**: OpenAI dominated both periods, but Google was significantly more prominent in Feb than in May, making it a strong signal for the earlier period.
 
 **February 2024** was defined by "Google Gemini" coverage. The correlation with higher negative scores and self-referencing language suggests this period contained significant critical analysis, op-eds, and controversy regarding Google's AI launches.
 
@@ -135,7 +135,7 @@ with open(OUTPUT_DIR + "summary_report.md", "w") as f:
 
 print(f"Report saved to: {OUTPUT_DIR}summary_report.md")
 
-# --- 6. GENERATE GRAPHS (IMPROVED) ---
+# 6. GENERATE GRAPHS (IMPROVED) 
 print("Generating graphs...")
 
 import matplotlib.pyplot as plt
@@ -235,7 +235,7 @@ plt.tight_layout()
 plt.savefig(GRAPH_DIR + "graph_share_of_voice.png")
 print("Saved graph_share_of_voice.png")
 
-# --- 5. SOURCE SENTIMENT ANALYSIS ---
+# 5. SOURCE SENTIMENT ANALYSIS 
 print("Analyzing sentiment by news source...")
 
 # Most positive and negative sources for Google (minimum 3 articles)
